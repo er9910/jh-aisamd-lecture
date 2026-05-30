@@ -552,6 +552,54 @@
       ::slotted([data-deck-skip]) { display: none !important; }
       .overlay, .rail, .rail-resize, .ctxmenu, .confirm-backdrop { display: none !important; }
     }
+
+    /* ── Dot-mode rail overrides (deck-local) ─────────────────────────── */
+    .rail {
+      background: transparent !important;
+      border-right: none !important;
+      padding: 28px 0 !important;
+      align-items: center !important;
+      gap: 18px !important;
+    }
+    .rail-resize { display: none !important; }
+    .thumb {
+      gap: 0 !important;
+      width: 12px !important;
+      flex: 0 0 12px !important;
+      justify-content: center !important;
+    }
+    .thumb .num { display: none !important; }
+    .thumb .frame {
+      flex: none !important;
+      width: 12px !important;
+      height: 12px !important;
+      aspect-ratio: 1 / 1 !important;
+      border-radius: 50% !important;
+      background: rgba(255,255,255,0.22) !important;
+      outline: none !important;
+      transition: background 200ms ease, transform 200ms ease, box-shadow 200ms ease !important;
+    }
+    .thumb .frame > * { display: none !important; }
+    .thumb:hover .frame {
+      background: rgba(255,255,255,0.5) !important;
+      transform: scale(1.2);
+    }
+    .thumb:focus-visible .frame {
+      outline: none !important;
+      box-shadow: 0 0 0 3px rgba(168,85,247,0.45) !important;
+    }
+    .thumb[data-current] .frame {
+      background: #a855f7 !important;
+      outline: none !important;
+      animation: deck-dot-pulse 1.6s ease-in-out infinite;
+    }
+    .thumb::before { display: none !important; }
+    .thumb[data-skip] .frame { opacity: 0.35 !important; }
+    .thumb[data-skip] .frame::after { display: none !important; }
+    @keyframes deck-dot-pulse {
+      0%, 100% { box-shadow: 0 0 6px rgba(168,85,247,0.6), 0 0 0 0 rgba(168,85,247,0.55); }
+      50%      { box-shadow: 0 0 14px rgba(168,85,247,1), 0 0 0 6px rgba(168,85,247,0); }
+    }
   `;
 
   class DeckStage extends HTMLElement {
@@ -961,18 +1009,13 @@
       this._countEl = overlay.querySelector('.current');
       this._totalEl = overlay.querySelector('.total');
 
-      // Restore persisted rail width.
-      let rw = 188;
-      try {
-        const s = localStorage.getItem('deck-stage.railWidth');
-        if (s) rw = parseInt(s, 10) || rw;
-      } catch (err) {}
-      this._setRailWidth(rw);
+      // Dot-mode rail: fixed narrow width, persisted value ignored.
+      this._setRailWidth(52);
       this._syncRailHidden();
     }
 
     _setRailWidth(px) {
-      const w = Math.max(120, Math.min(360, Math.round(px)));
+      const w = Math.max(40, Math.min(72, Math.round(px)));
       this._railPx = w;
       this.style.setProperty('--deck-rail-w', w + 'px');
       this._fit();
