@@ -144,7 +144,7 @@
       position: relative;
       transform-origin: center center;
       flex-shrink: 0;
-      background: #fff;
+      background: #04030a;
       will-change: transform;
     }
 
